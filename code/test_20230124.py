@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 import Adafruit_PCA9685
 import time
 import numpy as np
+import tan
 
 # GPIOピン番号の指示方法
 GPIO.setmode(GPIO.BOARD)
@@ -94,8 +95,8 @@ try:
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                 togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT)
                 print('左です')
-            # if(BLdis < 15  and  FLdis < 90):
-            if((BLdis < 15  and  FLdis < 90) or (BLdis < 15  and  FRdis > 60)) :
+            # if((BLdis < 15  and  FLdis < 90) or (BLdis < 15  and  FRdis > 60)) :
+            if((BLdis < 25  and  FLdis < 90) or (BLdis < 15  and  FRdis > 60)) :
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                 togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT)
                 print('\033[92m' + '右です'+'\033[0m')
@@ -106,8 +107,8 @@ try:
             # elif short < FLdis  -10  and FRdis < short: 
             elif short < FLdis  and FRdis < short: 
                 #add
-                if(Cdis>180 or BLdis > 20):
-                    if(FRdis > 180 and FRdis < 340):
+                if(Cdis>180 or BLdis < 60):
+                    if(FRdis > 200 and FRdis < 340):
                         togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                         togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT+30)
                         print('\033[94m'+"右前空き"+'\033[0m')
@@ -173,6 +174,7 @@ try:
         d = np.vstack([d,[time.time()-start_time, Cdis, FRdis, FLdis, BRdis, BLdis]])
         #距離を表示
         print('BL:{0:.1f} , FL:{1:.1f} , C:{2:.1f}, FR:{3:.1f} , BR:{4:.1f}'.format(BLdis,FLdis,Cdis,FRdis,BRdis))
+        # print(tan.tan(Cdis, BLdis))
         # time.sleep(0.05)
         time.sleep(0.03)
 
