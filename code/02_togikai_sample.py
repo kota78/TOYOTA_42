@@ -107,7 +107,7 @@ try:
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                 togikai_drive.Steer(PWM_PARAM,pwm,time,SLEFT) #original = "+"
                 print('\033[92m'+"turn left"+'\033[0m')
-            if(LHdis < 130):
+            if(LHdis > 120):
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                 togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT) #original = "+"
                 print('\033[92m'+"turn left"+'\033[0m')
