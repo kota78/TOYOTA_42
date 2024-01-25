@@ -98,7 +98,7 @@ try:
                 togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT)
                 print('左です')
             # if(BLdis < 15  and  FLdis < 90):
-            if((BLdis < 15  and  FLdis < 90) or (BLdis < 15  and  FRdis > 60)) or What?tan >= 50:
+            if((BLdis < 15  and  FLdis < 90) or (BLdis < 15  and  FRdis > 60)) or tan >= 50:
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                 togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT)
                 print('\033[92m' + '右です'+'\033[0m')
