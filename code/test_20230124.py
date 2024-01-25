@@ -171,7 +171,6 @@ try:
         d = np.vstack([d,[time.time()-start_time, Cdis, FRdis, FLdis, BRdis, BLdis]])
         #距離を表示
         print('BL:{0:.1f} , FL:{1:.1f} , C:{2:.1f}, FR:{3:.1f} , BR:{4:.1f}'.format(BLdis,FLdis,Cdis,FRdis,BRdis))
-        print(tan + '°')
         # time.sleep(0.05)
         time.sleep(0.03)
 
