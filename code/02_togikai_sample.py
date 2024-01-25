@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.append('/home/pi/')
+sys.path.append('/home/pi')
 import togikai_drive
 import togikai_ultrasonic
 import signal
@@ -55,13 +55,16 @@ Cshort = 20
 short = 70
 #左右リアセンサー反応距離（追加）
 Rshort = 30
+Rlong=60
+#減速する基準
+Dshort = 70
 #モーター出力
 FORWARD_S = 70 #<=100
-FORWARD_C = 70 #<=100
+FORWARD_C = 30 #<=100
 REVERSE = -60 #<=100
 #Stear
-LEFT = 90 #<=100
-RIGHT = -90 #<=100
+LEFT = 30 #<=100
+RIGHT = -30 #<=100
 #データ記録用配列作成
 d = np.zeros(6)
 #操舵、駆動モーターの初期化
@@ -90,6 +93,16 @@ try:
         RRHdis = togikai_ultrasonic.Mesure(GPIO,time,29,31)
 
         if FRdis >= Cshort:
+            #前がDshortより近づいたらduty比を変更
+            if(FRdis<70):
+                FORWARD_C = 5
+                print('\033[92m'+"slow"+'\033[0m')     
+            elif(70 <= FRdis and FRdis <170):
+                FORWARD_C = 10
+                print('\033[92m'+"normal"+'\033[0m')     
+            else:
+                FORWARD_C = 100
+                print('\033[92m'+"fast"+'\033[0m')     
             if LHdis -20 <= short and RHdis >= short:
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
@@ -97,13 +110,19 @@ try:
             elif LHdis > short and RHdis < short:
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT) #original = "-"
-               print('\033[93m'+"左旋回1"+'\033[0m')   
+               print('\033[93m'+"左旋回1"+'\033[0m')
             #追加
+            #左が近づいたら
             elif RLHdis  <= Rshort and RRHdis >= Rshort:
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
-               print('\033[92m'+"右旋回2"+'\033[0m')     
-
+               print('\033[92m'+"右旋回2"+'\033[0m')   
+            #左が遠ざかったら
+            elif RLHdis  >= Rlong and RRHdis >= Rshort:
+               togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
+               togikai_drive.Steer(PWM_PARAM,pwm,time,50) #original = "+"
+               print('\033[92m'+"ちょい左旋回"+'\033[0m')   
+            #右が近づいたら
             elif RLHdis > Rshort and RRHdis < Rshort:
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT) #original = "-"
@@ -119,18 +138,13 @@ try:
                     togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
                     print('\033[92m'+"右旋回3"+'\033[0m')                
                 else:
-                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_S)
+                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,0)
                     print('\033[94m'+"直進中1"+'\033[0m')
             else:
-                if(FRdis>200):
-                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_S)
-                    togikai_drive.Steer(PWM_PARAM,pwm,time,0)
-                    print('\033[94m'+"速い直進"+'\033[0m')
-                else:
-                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_S)
-                    togikai_drive.Steer(PWM_PARAM,pwm,time,0)
-                    print('\033[94m'+"直進中2"+'\033[0m')     
+                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_S)
+                togikai_drive.Steer(PWM_PARAM,pwm,time,0)
+                print('\033[94m'+"直進中2"+'\033[0m')     
         elif time.time()-start_time < 1:
             pass
         else:
