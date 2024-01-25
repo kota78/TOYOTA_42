@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 import Adafruit_PCA9685
 import time
 import numpy as np
+import tan
 
 # GPIOピン番号の指示方法
 GPIO.setmode(GPIO.BOARD)
@@ -89,17 +90,19 @@ try:
         #RrRHセンサ距離
         BRdis = togikai_ultrasonic.Mesure(GPIO,time,29,31)
 
+        tan = tan.tan(Cdis, BLdis)
+
         if Cdis >= Cshort:
             if(BLdis > 77):
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                 togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT)
                 print('左です')
             # if(BLdis < 15  and  FLdis < 90):
-            if((BLdis < 15  and  FLdis < 90) or (BLdis < 15  and  FRdis > 60)) :
+            if((BLdis < 15  and  FLdis < 90) or (BLdis < 15  and  FRdis > 60)) or What?tan >= 50:
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                 togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT)
                 print('\033[92m' + '右です'+'\033[0m')
-            elif FLdis -20 <= short and FRdis >= short:
+            elif (FLdis -20 <= short and FRdis >= short) or tan >= 50:
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
                print('\033[92m'+"右旋回1"+'\033[0m')     
@@ -116,7 +119,7 @@ try:
                     print('\033[93m'+"左旋回1"+'\033[0m')
                 #add-end
             #追加
-            elif BLdis  <= Rshort and BRdis >= Rshort:
+            elif BLdis  <= Rshort and BRdis >= Rshort or tan >= 50:
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
                print('\033[92m'+"右旋回2"+'\033[0m')     
@@ -133,7 +136,7 @@ try:
                     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT) #original = "-"
                     print('\033[93m'+"左旋回3"+'\033[0m')   
-                elif(FRdis - FLdis) > 10:
+                elif(FRdis - FLdis) > 10 or tan >= 50:
                     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
                     print('\033[92m'+"右旋回3"+'\033[0m')                
@@ -168,6 +171,7 @@ try:
         d = np.vstack([d,[time.time()-start_time, Cdis, FRdis, FLdis, BRdis, BLdis]])
         #距離を表示
         print('BL:{0:.1f} , FL:{1:.1f} , C:{2:.1f}, FR:{3:.1f} , BR:{4:.1f}'.format(BLdis,FLdis,Cdis,FRdis,BRdis))
+        print(tan + '°')
         # time.sleep(0.05)
         time.sleep(0.03)
 
