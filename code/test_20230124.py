@@ -57,11 +57,11 @@ short = 70
 Rshort = 30
 #モーター出力
 FORWARD_S = 100 #<=100
-FORWARD_C = 30 #<=100
+FORWARD_C = 80 #<=100
 REVERSE = -60 #<=100
 #Stear
-LEFT = 90 #<=100
-RIGHT = -90 #<=100
+LEFT = 99 #<=100
+RIGHT = -99 #<=100
 #データ記録用配列作成
 d = np.zeros(6)
 #操舵、駆動モーターの初期化
@@ -90,6 +90,14 @@ try:
         RRHdis = togikai_ultrasonic.Mesure(GPIO,time,29,31)
 
         if FRdis >= Cshort:
+            if(RLHdis > 77):
+                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
+                togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT)
+                print('左です')
+            if(RLHdis < 15  and  LHdis < 90):
+                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
+                togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT)
+                print('右です')
             if LHdis -20 <= short and RHdis >= short:
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
@@ -150,7 +158,7 @@ try:
         #距離を表示
         print('Fr:{0:.1f} , FrRH:{1:.1f} , FrLH:{2:.1f}, RrRH:{3:.1f} , RrLH:{4:.1f}'.format(FRdis,RHdis,LHdis,RRHdis,RLHdis))
         # time.sleep(0.05)
-        time.sleep(0.05)
+        time.sleep(0.03)
 
 except KeyboardInterrupt:
     print('stop!')
