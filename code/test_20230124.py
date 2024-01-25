@@ -105,9 +105,16 @@ try:
                print('\033[92m'+"右旋回1"+'\033[0m')     
             # elif short < FLdis  -10  and FRdis < short: 
             elif short < FLdis  and FRdis < short: 
-               togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
-               togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT) #original = "-"
-               print('\033[93m'+"左旋回1"+'\033[0m')
+                #add
+                if(Cdis>180):
+                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
+                    togikai_drive.Steer(PWM_PARAM,pwm,time,0)
+                    print('\033[94m'+"直進中前空き"+'\033[0m')
+                else:
+                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
+                    togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT) #original = "-"
+                    print('\033[93m'+"左旋回1"+'\033[0m')
+                #add-end
             #追加
             elif BLdis  <= Rshort and BRdis >= Rshort:
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)

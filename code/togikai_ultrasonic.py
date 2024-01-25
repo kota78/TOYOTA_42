@@ -20,8 +20,8 @@ def Mesure(GPIO,time,trig,echo):
                 print("break2")
                 break
         d = (sigon - sigoff)*34000/2
-        if d > 200:
-            dis += 200/n
+        if d > 400:
+            dis += 400/n
         else:
             dis += d/n
     return dis
