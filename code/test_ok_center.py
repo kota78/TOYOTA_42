@@ -48,8 +48,8 @@ short = 70
 Rshort = 30
 #モーター出力
 FORWARD_MAX = 100
-FORWARD_S = 60 #<=100
-FORWARD_C = 50 #<=100
+FORWARD_S = 50 #<=100
+FORWARD_C = 40 #<=100
 REVERSE = -60 #<=100
 #Stear
 LEFT = 99 #<=100
@@ -116,34 +116,34 @@ try:
         #     BLdis = before_BLdis
         # if(BRdis < 0):
         #     BRdis = before_BRdis
-        if(Cdis > 300 and FLdis > 60 and FRdis > 60):
-            if(BLdis > 30):
-                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_MAX)
-                togikai_drive.Steer(PWM_PARAM,pwm,time, SLEFT)
-                print('爆速左です')
-            elif(BRdis > 30):
-                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_MAX)
-                togikai_drive.Steer(PWM_PARAM,pwm,time,SRIGHT)
-                print('爆速右です')
-            else:
+        if(Cdis > 370 and FLdis > 60 and FRdis > 60):
+            if BLdis > 40 and BRdis > 40:
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_MAX)
                 togikai_drive.Steer(PWM_PARAM,pwm,time,0)
                 print('爆速です')
+            # elif(BLdis > 30):
+            #     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_MAX)
+            #     togikai_drive.Steer(PWM_PARAM,pwm,time, SLEFT)
+            #     print('爆速左です')
+            # elif(BRdis > 30):
+            #     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_MAX)
+            #     togikai_drive.Steer(PWM_PARAM,pwm,time,SRIGHT)
+            #     print('爆速右です')
         elif Cdis >= Cshort:
             # if(BLdis < 15  and  FLdis < 90):
-            if((BLdis < 35  and  FLdis < 90) or (BLdis < 30  and  FRdis > 60) 
+            if((BLdis < 40 and  FLdis < 90) or (Cdis < 80 and  BLdis < 30  and  FRdis > 60) 
                 or (FLdis -20 <= short and FRdis >= short)) :
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
                print('\033[92m'+"右旋回1"+'\033[0m')
-            # elif short < FLdis  -10  and FRdis < short:
-            elif short < FLdis  and FRdis < short:
+            elif short < FLdis  and FRdis < short + 10:
+            # elif short < FLdis  and FRdis < short:
                 #add
                 if(Cdis>180 and Cdis < 300 and FRdis > 30 and FLdis > 30):
                     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,0)
                     print('\033[94m'+"直進中前空き"+'\033[0m')                 
-                else:
+                elif BLdis > 30:
                     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT) #original = "-"
                     print('\033[93m'+"左旋回1"+'\033[0m')
@@ -154,13 +154,13 @@ try:
                togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
                print('\033[92m'+"右旋回2"+'\033[0m')
             # elif BLdis  > Rshort and BRdis < Rshort:
-            elif BLdis + 10 > Rshort and BRdis < Rshort:
+            elif BLdis + 5 > Rshort and BRdis < Rshort + 10 and  BLdis > 30:
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT) #original = "-"
                print('\033[93m'+"左旋回2"+'\033[0m')
             #追加ここまで
-            elif (FLdis > 150 and FRdis > 150):
-                if(Cdis<100):
+            elif (FLdis > 170 and FRdis > 170):
+                if(Cdis<120)and  BLdis > 30:
                     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT)
                     print('\033[94m'+"正面あり左折"+'\033[0m')
@@ -168,9 +168,9 @@ try:
                     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_S)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,0)
                     print('\033[94m'+"直進中4"+'\033[0m')
-            elif (BLdis < 40):
+            elif (BLdis > 40):
                    # if (FLdis - FRdis)>: 10
-                if (FLdis - FRdis)> 15:
+                if (FLdis - FRdis)> 15 and BLdis > 30:
                     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT) #original = "-"
                     print('\033[93m'+"左旋回3"+'\033[0m')
@@ -183,9 +183,12 @@ try:
                     togikai_drive.Steer(PWM_PARAM,pwm,time,0)
                     print('\033[94m'+"直進中1"+'\033[0m')
             else:
+                # togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
+                # togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT)
+                # print('左です')
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
-                togikai_drive.Steer(PWM_PARAM,pwm,time,LEFT)
-                print('左です')
+                togikai_drive.Steer(PWM_PARAM,pwm,time,0)
+                print('直進です')
                 
         elif time.time()-start_time < 1:
             pass

@@ -22,10 +22,10 @@ GPIO.setmode(GPIO.BOARD)
 
 #超音波センサ初期設定
 # Triger -- Fr:15, FrLH:38, RrLH:16, FrRH:32, RrRH:36
-t_list=[10,16,13,38,29]
+t_list=[22,16,13,38,29]
 GPIO.setup(t_list,GPIO.OUT,initial=GPIO.LOW)
 # Echo -- Fr:26, FrLH:40, RrLH:18, FrRH:31, RrRH:38
-e_list=[8,18,11,40,31]
+e_list=[24,18,11,40,31]
 
 GPIO.setup(e_list,GPIO.IN)
 
@@ -57,8 +57,8 @@ short = 70
 #左右リアセンサー反応距離（追加）
 Rshort = 30
 #モーター出力
-FORWARD_S = 100 #<=100
-FORWARD_C = 60 #<=100
+FORWARD_S = 80 #<=100
+FORWARD_C = 40 #<=100
 REVERSE = -60 #<=100
 #Stear
 LEFT = 99 #<=100
@@ -80,7 +80,7 @@ start_time = time.time()
 try:
     while True:
         #Frセンサ距離
-        Cdis = togikai_ultrasonic.Mesure(GPIO,time,10,8)
+        Cdis = togikai_ultrasonic.Mesure(GPIO,time,22,24)
         #FrLHセンサ距離
         FLdis = togikai_ultrasonic.Mesure(GPIO,time,16,18)
         #FrRHセンサ距離
@@ -90,7 +90,22 @@ try:
         #RrRHセンサ距離
         BRdis = togikai_ultrasonic.Mesure(GPIO,time,29,31)
 
+        # before_Cdis = 30
+        before_FLdis = 0
+        before_FRdis = 0
+        before_BLdis = 30
+        before_BRdis = 0
 
+        # if(Cdis < 0):
+        #     Cdis = before_Cdis
+        if(FLdis < 0):
+            FLdis = before_FLdis
+        if(FRdis < 0):
+            FRdis = before_FRdis
+        if(BLdis < 0):
+            BLdis = before_BLdis
+        if(BRdis < 0):
+            BRdis = before_BRdis
         if Cdis >= Cshort:
             if(BLdis > 77):
                 togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
@@ -104,12 +119,12 @@ try:
             elif (FLdis -20 <= short and FRdis >= short):
                togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
-               print('\033[92m'+"右旋回1"+'\033[0m')     
+               print('\033[92m'+"右旋回1"+'\033[0m')
             # elif short < FLdis  -10  and FRdis < short: 
             elif short < FLdis  and FRdis < short: 
                 #add
                 if(Cdis>180 and Cdis < 300):
-                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
+                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_S)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,0)
                     print('\033[94m'+"直進中前空き"+'\033[0m')
                 else:
@@ -140,16 +155,16 @@ try:
                     togikai_drive.Steer(PWM_PARAM,pwm,time,RIGHT) #original = "+"
                     print('\033[92m'+"右旋回3"+'\033[0m')                
                 else:
-                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
+                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_S)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,0)
                     print('\033[94m'+"直進中1"+'\033[0m')
             else:
-                if(Cdis > 200):
+                if Cdis >= 200:
                     togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_S)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,0)
                     print('\033[94m'+"速い直進"+'\033[0m')
                 else:
-                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_S)
+                    togikai_drive.Accel(PWM_PARAM,pwm,time,FORWARD_C)
                     togikai_drive.Steer(PWM_PARAM,pwm,time,0)
                     print('\033[94m'+"直進中2"+'\033[0m')     
         elif time.time()-start_time < 1:
@@ -170,6 +185,11 @@ try:
         d = np.vstack([d,[time.time()-start_time, Cdis, FRdis, FLdis, BRdis, BLdis]])
         #距離を表示
         print('BL:{0:.1f} , FL:{1:.1f} , C:{2:.1f}, FR:{3:.1f} , BR:{4:.1f}'.format(BLdis,FLdis,Cdis,FRdis,BRdis))
+        before_Cdis = Cdis
+        before_FLdis = FLdis
+        before_FRdis = FRdis
+        before_BLdis = BLdis
+        before_BRdis = BRdis
         # time.sleep(0.05)
         time.sleep(0.03)
 
